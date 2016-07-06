@@ -5,6 +5,7 @@ package sh
 
 import (
 	"fmt"
+	"io/ioutil"
 	"reflect"
 	"strings"
 	"testing"
@@ -14,10 +15,13 @@ import (
 
 func TestParse(t *testing.T) {
 	defaultPos = 0
+	n := 1
 	for i, c := range astTests {
 		want := c.ast.(*File)
 		setPosRecurse(t, "", want.Stmts, defaultPos, false)
 		for j, in := range c.strs {
+			ioutil.WriteFile(fmt.Sprintf("corpus/%03d", n), []byte(in), 0644)
+			n++
 			t.Run(fmt.Sprintf("%03d-%d", i, j), singleParse(in, want))
 		}
 	}
